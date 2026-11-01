@@ -1,0 +1,27 @@
+{
+  "expo": {
+    "name": "HelloWorldApp",
+    "slug": "helloworldapp",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "scheme": "helloworldapp",
+    "userInterfaceStyle": "automatic",
+    "newArchEnabled": true,
+    "ios": {
+      "supportsTablet": true
+    },
+    "android": {
+      "package": "com.example.helloworldapp"
+    },
+    "web": {
+      "bundler": "metro",
+      "output": "static"
+    },
+    "plugins": [
+      "expo-router"
+    ],
+    "experiments": {
+      "typedRoutes": true
+    }
+  }
+}
