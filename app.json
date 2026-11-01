@@ -1,17 +1,17 @@
 {
   "expo": {
-    "name": "HelloWorldApp",
-    "slug": "helloworldapp",
+    "name": "HelloWorldAppAppAppApp",
+    "slug": "helloworldappappappapp",
     "version": "1.0.0",
     "orientation": "portrait",
-    "scheme": "helloworldapp",
+    "scheme": "helloworldappappappapp",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
     "ios": {
       "supportsTablet": true
     },
     "android": {
-      "package": "com.example.helloworldapp"
+      "package": "com.example.helloworldappappappapp"
     },
     "web": {
       "bundler": "metro",
