@@ -19,7 +19,9 @@
     },
     "plugins": [
       "expo-router",
-      "react-native-edge-to-edge"
+      "react-native-edge-to-edge",
+      "./plugins/withArm64Only",
+      "expo-asset"
     ],
     "experiments": {
       "typedRoutes": true
