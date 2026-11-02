@@ -8,10 +8,10 @@
     "ios": "expo run:ios",
     "web": "expo start --web",
     "prebuild:android": "expo prebuild --platform android --clean",
-    "clean": "[ -d android ] && ./gradlew clean --project-dir android --no-daemon; rm -rf node_modules .expo android ios dist && npm cache clean --force",
-    "build:apk": "npm run prebuild:android && cd android && chmod +x gradlew && ./gradlew assembleDebug --no-daemon",
-    "build:apk:release": "npm run prebuild:android && cd android && chmod +x gradlew && ./gradlew assembleRelease --no-daemon",
-    "build:apk:fast": "[ -d android ] || npm run prebuild:android; cd android && chmod +x gradlew && ./gradlew assembleRelease"
+    "clean": "[ -d android ] && ./gradlew clean --project-dir android --no-daemon; rm -rf node_modules .expo android ios dist",
+    "build:apk": "bun run prebuild:android && cd android && chmod +x gradlew && ./gradlew assembleDebug --no-daemon",
+    "build:apk:release": "bun run prebuild:android && cd android && chmod +x gradlew && ./gradlew assembleRelease --no-daemon",
+    "build:apk:fast": "[ -d android ] || bun run prebuild:android; cd android && chmod +x gradlew && ./gradlew assembleRelease"
   },
   "dependencies": {
     "expo": "~53.0.0",
