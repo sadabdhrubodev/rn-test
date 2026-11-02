@@ -11,7 +11,9 @@
       "supportsTablet": true
     },
     "android": {
-      "package": "com.example.helowrldApp"
+      "package": "com.example.helowrldApp",
+      "versionCode": 1,
+      "permissions": ["REQUEST_INSTALL_PACKAGES"]
     },
     "web": {
       "bundler": "metro",

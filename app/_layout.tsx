@@ -1,5 +1,6 @@
 import { Stack } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
+import UpdatePrompt from '../components/UpdatePrompt';
 
 export default function RootLayout() {
   return (
@@ -29,6 +30,7 @@ export default function RootLayout() {
         />
       </Stack>
       <StatusBar style="auto" />
+      <UpdatePrompt />
     </>
   );
 }
