@@ -17,9 +17,9 @@ export default function RootLayout() {
         }}
       >
         <Stack.Screen
-          name="index"
+          name="(tabs)"
           options={{
-            title: 'Home',
+            headerShown: false,
           }}
         />
         <Stack.Screen
@@ -29,7 +29,7 @@ export default function RootLayout() {
           }}
         />
       </Stack>
-      <StatusBar style="auto" />
+      <StatusBar style="light" />
       <UpdatePrompt />
     </>
   );

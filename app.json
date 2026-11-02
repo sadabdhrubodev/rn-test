@@ -13,7 +13,9 @@
     "android": {
       "package": "com.example.helowrldApp",
       "versionCode": 1,
-      "permissions": ["REQUEST_INSTALL_PACKAGES"]
+      "permissions": [
+        "REQUEST_INSTALL_PACKAGES"
+      ]
     },
     "web": {
       "bundler": "metro",
@@ -23,7 +25,8 @@
       "expo-router",
       "react-native-edge-to-edge",
       "./plugins/withArm64Only",
-      "expo-asset"
+      "expo-asset",
+      "expo-font"
     ],
     "experiments": {
       "typedRoutes": true
