@@ -42,9 +42,15 @@ export default function RootLayout() {
             title: 'Details',
           }}
         />
+        <Stack.Screen
+          name="update"
+          options={{
+            title: 'App Update',
+          }}
+        />
       </Stack>
       <StatusBar style="light" />
-      <UpdatePrompt />
+      {splashDone && <UpdatePrompt />}
       {!splashDone && (
         <AnimatedSplash onReady={hideNativeSplash} onFinished={finishSplash} />
       )}

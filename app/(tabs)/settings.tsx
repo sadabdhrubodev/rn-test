@@ -1,5 +1,7 @@
 import { useState } from 'react';
-import { StyleSheet, Switch, Text, View } from 'react-native';
+import { Pressable, StyleSheet, Switch, Text, View } from 'react-native';
+import Ionicons from '@expo/vector-icons/Ionicons';
+import { router } from 'expo-router';
 
 export default function SettingsScreen() {
   const [notifications, setNotifications] = useState(true);
@@ -20,6 +22,14 @@ export default function SettingsScreen() {
             trackColor={{ false: '#ccc', true: '#6200ee' }}
           />
         </View>
+        <View style={styles.divider} />
+        <Pressable style={styles.settingRow} onPress={() => router.push('/update')}>
+          <View>
+            <Text style={styles.label}>App updates</Text>
+            <Text style={styles.hint}>Check for and install updates</Text>
+          </View>
+          <Ionicons name="chevron-forward" size={20} color="#bbb" />
+        </Pressable>
         <View style={styles.divider} />
         <View style={styles.settingRow}>
           <View>

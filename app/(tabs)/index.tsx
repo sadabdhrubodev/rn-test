@@ -21,13 +21,19 @@ const MENU = [
     icon: 'settings' as const,
     route: '/settings' as const,
   },
-  {
-    title: 'About',
-    subtitle: 'App version and info',
-    icon: 'information-circle' as const,
-    route: '/about' as const,
-  },
-];
+    {
+      title: 'About',
+      subtitle: 'App version and info',
+      icon: 'information-circle' as const,
+      route: '/about' as const,
+    },
+    {
+      title: 'App Update',
+      subtitle: 'Check for and install updates',
+      icon: 'arrow-down-circle' as const,
+      route: '/update' as const,
+    },
+  ];
 
 export default function HomeScreen() {
   return (

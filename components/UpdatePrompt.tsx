@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Modal, Pressable, StyleSheet, Text, View } from 'react-native';
+import { AppState, Modal, Pressable, StyleSheet, Text, View } from 'react-native';
 import { checkForUpdate, downloadAndInstallApk, type RemoteVersion } from '../lib/appUpdate';
 
 type Phase =
@@ -17,13 +17,29 @@ export default function UpdatePrompt() {
 
   useEffect(() => {
     let cancelled = false;
-    checkForUpdate().then((result) => {
-      if (!cancelled && result.available) {
-        setPhase({ kind: 'available', remote: result.remote });
+    const runCheck = async () => {
+      const result = await checkForUpdate();
+      if (cancelled || !result.available) {
+        return;
+      }
+      // Never override an in-progress download/error dialog.
+      setPhase((current) =>
+        current.kind === 'idle'
+          ? { kind: 'available', remote: result.remote }
+          : current
+      );
+    };
+    runCheck();
+    // If the app was already open when a release went out, checking again
+    // on foreground means the popup shows as soon as the user opens the app.
+    const subscription = AppState.addEventListener('change', (state) => {
+      if (state === 'active') {
+        runCheck();
       }
     });
     return () => {
       cancelled = true;
+      subscription.remove();
     };
   }, []);
 
