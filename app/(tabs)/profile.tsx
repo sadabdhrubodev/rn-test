@@ -3,6 +3,7 @@ import { StyleSheet, Text, View } from 'react-native';
 export default function ProfileScreen() {
   return (
     <View style={styles.container}>
+      <View style={styles.content}>
       <View style={styles.avatarCircle}>
         <Text style={styles.avatarText}>S</Text>
       </View>
@@ -18,6 +19,7 @@ export default function ProfileScreen() {
           <Text style={styles.label}>Member since: </Text>2026
         </Text>
       </View>
+      </View>
     </View>
   );
 }
@@ -25,10 +27,14 @@ export default function ProfileScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    padding: 24,
+    paddingTop: 8,
+    backgroundColor: '#f7f5ff',
+  },
+  content: {
+    flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
-    padding: 24,
-    backgroundColor: '#f7f5ff',
   },
   avatarCircle: {
     width: 96,

@@ -9,6 +9,7 @@ export default function SettingsScreen() {
 
   return (
     <View style={styles.container}>
+      <View style={styles.content}>
       <Text style={styles.title}>Settings</Text>
       <View style={styles.card}>
         <View style={styles.settingRow}>
@@ -43,6 +44,7 @@ export default function SettingsScreen() {
           />
         </View>
       </View>
+      </View>
     </View>
   );
 }
@@ -50,10 +52,14 @@ export default function SettingsScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    padding: 24,
+    paddingTop: 8,
+    backgroundColor: '#f7f5ff',
+  },
+  content: {
+    flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
-    padding: 24,
-    backgroundColor: '#f7f5ff',
   },
   title: {
     fontSize: 28,

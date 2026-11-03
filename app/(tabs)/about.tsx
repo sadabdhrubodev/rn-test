@@ -7,6 +7,7 @@ export default function AboutScreen() {
 
   return (
     <View style={styles.container}>
+      <View style={styles.content}>
       <Text style={styles.title}>About</Text>
       <Text style={styles.subtitle}>
         Minimal Hello World app built with Expo and React Native.
@@ -27,6 +28,7 @@ export default function AboutScreen() {
           <Text style={styles.value}>{versionCode}</Text>
         </View>
       </View>
+      </View>
     </View>
   );
 }
@@ -34,10 +36,14 @@ export default function AboutScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    padding: 24,
+    paddingTop: 8,
+    backgroundColor: '#f7f5ff',
+  },
+  content: {
+    flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
-    padding: 24,
-    backgroundColor: '#f7f5ff',
   },
   title: {
     fontSize: 28,

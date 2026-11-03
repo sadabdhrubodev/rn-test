@@ -1,6 +1,6 @@
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { router } from 'expo-router';
-import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 
 const MENU = [
   {
@@ -33,11 +33,33 @@ const MENU = [
       icon: 'arrow-down-circle' as const,
       route: '/update' as const,
     },
+    {
+      title: 'Notifications',
+      subtitle: 'See recent alerts',
+      icon: 'notifications' as const,
+      route: '/notifications' as const,
+    },
+    {
+      title: 'Help & FAQ',
+      subtitle: 'Answers to common questions',
+      icon: 'help-circle' as const,
+      route: '/help' as const,
+    },
+    {
+      title: 'Feedback',
+      subtitle: 'Rate the app and send a message',
+      icon: 'chatbubble-ellipses' as const,
+      route: '/feedback' as const,
+    },
   ];
 
 export default function HomeScreen() {
   return (
     <View style={styles.container}>
+      <ScrollView
+        contentContainerStyle={styles.content}
+        showsVerticalScrollIndicator={false}
+      >
       <View style={styles.hero}>
         <View style={styles.heroIcon}>
           <Ionicons name="sparkles" size={36} color="#fff" />
@@ -66,6 +88,7 @@ export default function HomeScreen() {
           <Ionicons name="chevron-forward" size={20} color="#bbb" />
         </Pressable>
       ))}
+      </ScrollView>
     </View>
   );
 }
@@ -73,8 +96,11 @@ export default function HomeScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: 20,
     backgroundColor: '#f7f5ff',
+  },
+  content: {
+    flexGrow: 1,
+    padding: 20,
   },
   hero: {
     alignItems: 'center',

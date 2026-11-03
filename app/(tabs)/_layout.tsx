@@ -1,6 +1,10 @@
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { Tabs } from 'expo-router';
+import { Dimensions } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import HeaderBackButton from '../../components/HeaderBackButton';
+
+const SCREEN_WIDTH = Dimensions.get('window').width;
 
 export default function TabsLayout() {
   const insets = useSafeAreaInsets();
@@ -8,6 +12,27 @@ export default function TabsLayout() {
   return (
     <Tabs
       screenOptions={{
+        headerShown: true,
+        headerLeft: () => <HeaderBackButton />,
+        // Full-width horizontal slide on tab switches — same 250ms timing
+        // as the stack push above, so every route transition feels the same
+        // while the bottom tab bar stays mounted.
+        sceneStyleInterpolator: ({ current }) => ({
+          sceneStyle: {
+            transform: [
+              {
+                translateX: current.progress.interpolate({
+                  inputRange: [-1, 0, 1],
+                  outputRange: [-SCREEN_WIDTH, 0, SCREEN_WIDTH],
+                }),
+              },
+            ],
+          },
+        }),
+        transitionSpec: {
+          animation: 'timing',
+          config: { duration: 250 },
+        },
         tabBarActiveTintColor: '#6200ee',
         tabBarInactiveTintColor: '#999',
         tabBarStyle: {
@@ -40,6 +65,7 @@ export default function TabsLayout() {
         name="index"
         options={{
           title: 'Home',
+          headerLeft: () => null,
           tabBarIcon: ({ color, size }) => (
             <Ionicons name="home" size={size} color={color} />
           ),
