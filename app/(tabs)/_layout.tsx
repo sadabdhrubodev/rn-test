@@ -8,6 +8,13 @@ const SCREEN_WIDTH = Dimensions.get('window').width;
 
 export default function TabsLayout() {
   const insets = useSafeAreaInsets();
+  // Fully dynamic normally: the bar sits exactly above the system inset.
+  // But some firmware (seen on Xiaomi Note 11, 3-button mode) reports an
+  // almost-zero bottom inset while the buttons still overlay the screen.
+  // Honest gesture-mode insets are never below ~16dp, so anything smaller
+  // means the value cannot be trusted — fall back to real button-row
+  // clearance instead of letting the tabs slide under the buttons.
+  const bottomClearance = insets.bottom < 16 ? 40 : insets.bottom;
 
   return (
     <Tabs
@@ -41,7 +48,7 @@ export default function TabsLayout() {
           backgroundColor: '#fff',
           borderTopWidth: 0,
           paddingTop: 8,
-          paddingBottom: insets.bottom,
+          paddingBottom: bottomClearance,
           elevation: 12,
           shadowColor: '#000',
           shadowOpacity: 0.08,
