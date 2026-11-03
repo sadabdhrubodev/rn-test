@@ -2,7 +2,7 @@
   "expo": {
     "name": "Sadab Dhrubo",
     "slug": "helowrldApp",
-    "version": "1.0.3",
+    "version": "1.0.4",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "splash": {
@@ -19,7 +19,7 @@
     },
     "android": {
       "package": "com.example.helowrldApp",
-      "versionCode": 4,
+      "versionCode": 5,
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#6200ee"
@@ -35,6 +35,7 @@
     "plugins": [
       "expo-router",
       "expo-splash-screen",
+      "expo-notifications",
       "react-native-edge-to-edge",
       "./plugins/withArm64Only",
       "expo-asset",
