@@ -1,7 +1,10 @@
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import { router } from 'expo-router';
 import {
   ActivityIndicator,
+  Linking,
+  Platform,
+  ScrollView,
   StyleSheet,
   Text,
   TextInput,
@@ -20,79 +23,139 @@ Notifications.setNotificationHandler({
   }),
 });
 
-async function ensurePermission(): Promise<boolean> {
-  const current = await Notifications.getPermissionsAsync();
+const CHANNEL_ID = 'sadab-dhrubo-default';
+const STEP_TIMEOUT_MS = 15000;
+
+function withTimeout<T>(promise: Promise<T>, label: string): Promise<T> {
+  return Promise.race([
+    promise,
+    new Promise<never>((_, reject) =>
+      setTimeout(() => reject(new Error(`${label} timed out`)), STEP_TIMEOUT_MS)
+    ),
+  ]);
+}
+
+async function ensurePermission(
+  onStep: (step: string) => void
+): Promise<boolean> {
+  onStep('Checking notification permission…');
+  const current = await withTimeout(
+    Notifications.getPermissionsAsync(),
+    'Permission check'
+  );
   if (current.granted) {
     return true;
   }
-  const requested = await Notifications.requestPermissionsAsync();
+  onStep('Requesting notification permission…');
+  const requested = await withTimeout(
+    Notifications.requestPermissionsAsync(),
+    'Permission request'
+  );
   return requested.granted;
+}
+
+async function ensureChannel(): Promise<void> {
+  if (Platform.OS !== 'android') {
+    return;
+  }
+  // MIUI and other skins silently drop notifications posted without a
+  // properly configured channel, so create ours explicitly instead of
+  // relying on the library fallback channel.
+  await withTimeout(
+    Notifications.setNotificationChannelAsync(CHANNEL_ID, {
+      name: 'Sadab Dhrubo notifications',
+      importance: Notifications.AndroidImportance.HIGH,
+      vibrationPattern: [0, 250, 250, 250],
+      lightColor: '#6200ee',
+    }),
+    'Channel setup'
+  );
 }
 
 export default function NotificationsScreen() {
   const [message, setMessage] = useState('');
   const [sending, setSending] = useState(false);
   const [status, setStatus] = useState<string | null>(null);
+  const [needsSettings, setNeedsSettings] = useState(false);
+  const attemptRef = useRef(0);
 
-  const fireTestNotification = async () => {
+  const fireNotification = async (title: string, body: string) => {
+    const attempt = ++attemptRef.current;
+    const alive = () => attemptRef.current === attempt;
     setSending(true);
     setStatus(null);
+    setNeedsSettings(false);
     try {
-      const allowed = await ensurePermission();
-      if (!allowed) {
-        setStatus('Notification permission denied. Allow it from Settings.');
+      const allowed = await ensurePermission((step) => {
+        if (alive()) {
+          setStatus(step);
+        }
+      });
+      if (!alive()) {
         return;
       }
-      await Notifications.scheduleNotificationAsync({
-        content: {
-          title: 'Test notification',
-          body: 'Eta ekta test notification.',
-        },
-        trigger: null,
-      });
-      setStatus('Test notification sent. Shade namiye dekho.');
+      if (!allowed) {
+        setStatus(
+          'Notification permission denied. Settings theke allow koro, tarpor abar try koro.'
+        );
+        setNeedsSettings(true);
+        return;
+      }
+      if (alive()) {
+        setStatus('Scheduling notification…');
+      }
+      await ensureChannel();
+      if (!alive()) {
+        return;
+      }
+      await withTimeout(
+        Notifications.scheduleNotificationAsync({
+          content: { title, body },
+          // Channel-aware trigger fires immediately on OUR channel instead
+          // of the unreliable fallback channel.
+          trigger: { channelId: CHANNEL_ID },
+        }),
+        'Scheduling'
+      );
+      if (alive()) {
+        setStatus('Notification sent. Shade namiye dekho.');
+      }
     } catch (e) {
-      setStatus(e instanceof Error ? e.message : 'Failed to send notification.');
+      if (alive()) {
+        setStatus(
+          e instanceof Error ? e.message : 'Failed to send notification.'
+        );
+        setNeedsSettings(true);
+      }
     } finally {
-      setSending(false);
+      if (alive()) {
+        setSending(false);
+      }
     }
   };
 
-  const fireCustomNotification = async () => {
+  const fireTestNotification = () =>
+    fireNotification('Test notification', 'Eta ekta test notification.');
+
+  const fireCustomNotification = () => {
     const text = message.trim();
     if (!text) {
       setStatus('Age text area te kichu likho.');
       return;
     }
-    setSending(true);
-    setStatus(null);
-    try {
-      const allowed = await ensurePermission();
-      if (!allowed) {
-        setStatus('Notification permission denied. Allow it from Settings.');
-        return;
-      }
-      await Notifications.scheduleNotificationAsync({
-        content: {
-          title: 'Sadab Dhrubo',
-          body: text,
-        },
-        trigger: null,
-      });
-      setStatus('Notification sent. Shade namiye dekho.');
-      setMessage('');
-    } catch (e) {
-      setStatus(e instanceof Error ? e.message : 'Failed to send notification.');
-    } finally {
-      setSending(false);
-    }
+    setMessage('');
+    return fireNotification('Sadab Dhrubo', text);
   };
 
   return (
-    <View style={styles.container}>
+    <ScrollView
+      style={styles.container}
+      contentContainerStyle={styles.content}
+      showsVerticalScrollIndicator={false}
+    >
       <Text style={styles.title}>Notifications</Text>
       <Text style={styles.subtitle}>
-        Button press korlei sathe sathe notification ashbe.
+        Button press korle sathe sathe notification ashbe.
       </Text>
 
       <View style={styles.card}>
@@ -124,21 +187,32 @@ export default function NotificationsScreen() {
         </View>
       )}
 
+      {needsSettings && !sending && (
+        <RoundedButton
+          title="Open Settings"
+          variant="outline"
+          onPress={() => Linking.openSettings()}
+        />
+      )}
+
       <RoundedButton
         title="Go Back"
         variant="outline"
         onPress={() => router.back()}
       />
-    </View>
+    </ScrollView>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    backgroundColor: '#f7f5ff',
+  },
+  content: {
+    flexGrow: 1,
     alignItems: 'center',
     padding: 24,
-    backgroundColor: '#f7f5ff',
   },
   title: {
     fontSize: 28,
