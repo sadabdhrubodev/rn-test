@@ -1,18 +1,29 @@
 {
   "expo": {
-    "name": "helowrldApp",
+    "name": "Sadab Dhrubo",
     "slug": "helowrldApp",
     "version": "1.0.0",
     "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "splash": {
+      "image": "./assets/splash-icon.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#6200ee"
+    },
     "scheme": "helowrldApp",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "icon": "./assets/icon.png"
     },
     "android": {
       "package": "com.example.helowrldApp",
       "versionCode": 1,
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/adaptive-icon.png",
+        "backgroundColor": "#6200ee"
+      },
       "permissions": [
         "REQUEST_INSTALL_PACKAGES"
       ]
@@ -23,6 +34,7 @@
     },
     "plugins": [
       "expo-router",
+      "expo-splash-screen",
       "react-native-edge-to-edge",
       "./plugins/withArm64Only",
       "expo-asset",

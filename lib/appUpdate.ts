@@ -5,7 +5,7 @@ import * as IntentLauncher from 'expo-intent-launcher';
 import { Platform } from 'react-native';
 
 // Single place to change if the repo ever moves.
-const GITHUB_REPO = 'sadabdhrubo1997/rn-hello-world';
+const GITHUB_REPO = 'sadabdhrubodev/rn-test';
 // Published next to app-release.apk by the GitHub workflow (see
 // .github/workflows/build-apk.yml "Generate version.json" step).
 const VERSION_URL = `https://github.com/${GITHUB_REPO}/releases/latest/download/version.json`;
