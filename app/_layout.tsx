@@ -2,6 +2,7 @@ import { useCallback, useState } from 'react';
 import { Stack } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
 import { StatusBar } from 'expo-status-bar';
+import { SafeAreaProvider } from 'react-native-safe-area-context';
 import AnimatedSplash from '../components/AnimatedSplash';
 import UpdatePrompt from '../components/UpdatePrompt';
 
@@ -17,7 +18,7 @@ export default function RootLayout() {
   }, []);
 
   return (
-    <>
+    <SafeAreaProvider>
       <Stack
         screenOptions={{
           headerStyle: {
@@ -47,6 +48,6 @@ export default function RootLayout() {
       {!splashDone && (
         <AnimatedSplash onReady={hideNativeSplash} onFinished={finishSplash} />
       )}
-    </>
+    </SafeAreaProvider>
   );
 }
