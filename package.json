@@ -15,6 +15,7 @@
   },
   "dependencies": {
     "@expo/vector-icons": "^14.1.0",
+    "@react-navigation/drawer": "^7.14.4",
     "expo": "~53.0.0",
     "expo-application": "~6.1.5",
     "expo-asset": "~11.1.7",
@@ -31,6 +32,8 @@
     "react": "19.0.0",
     "react-native": "0.79.6",
     "react-native-edge-to-edge": "1.6.0",
+    "react-native-gesture-handler": "~2.24.0",
+    "react-native-reanimated": "~3.17.4",
     "react-native-safe-area-context": "5.4.0",
     "react-native-screens": "~4.11.1"
   },

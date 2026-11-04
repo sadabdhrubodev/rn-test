@@ -1,6 +1,6 @@
 import { router } from 'expo-router';
 import { StyleSheet, Text, View } from 'react-native';
-import RoundedButton from '../components/RoundedButton';
+import RoundedButton from '../../components/RoundedButton';
 
 export default function DetailsScreen() {
   return (

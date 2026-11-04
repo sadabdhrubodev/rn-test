@@ -11,7 +11,7 @@ import {
   View,
 } from 'react-native';
 import * as Notifications from 'expo-notifications';
-import RoundedButton from '../components/RoundedButton';
+import RoundedButton from '../../components/RoundedButton';
 
 // Show the notification even when the app is open in the foreground.
 Notifications.setNotificationHandler({
@@ -24,13 +24,27 @@ Notifications.setNotificationHandler({
 });
 
 const CHANNEL_ID = 'sadab-dhrubo-default';
-const STEP_TIMEOUT_MS = 15000;
 
-function withTimeout<T>(promise: Promise<T>, label: string): Promise<T> {
+// Slow devices (old phones, MIUI background throttling, first run after an
+// update while dexopt runs) can take a while on native calls, so the
+// schedule step gets a longer leash than the quick permission checks.
+const PERMISSION_TIMEOUT_MS = 20000;
+const SCHEDULE_TIMEOUT_MS = 60000;
+
+// Permission + channel survive for the session: repeat presses skip the
+// slow native round-trips and go straight to scheduling.
+let cachedPermissionGranted: boolean | null = null;
+let channelReady: Promise<void> | null = null;
+
+function withTimeout<T>(
+  promise: Promise<T>,
+  label: string,
+  ms: number
+): Promise<T> {
   return Promise.race([
     promise,
     new Promise<never>((_, reject) =>
-      setTimeout(() => reject(new Error(`${label} timed out`)), STEP_TIMEOUT_MS)
+      setTimeout(() => reject(new Error(`${label} timed out`)), ms)
     ),
   ]);
 }
@@ -38,19 +52,26 @@ function withTimeout<T>(promise: Promise<T>, label: string): Promise<T> {
 async function ensurePermission(
   onStep: (step: string) => void
 ): Promise<boolean> {
+  if (cachedPermissionGranted) {
+    return true;
+  }
   onStep('Checking notification permission…');
   const current = await withTimeout(
     Notifications.getPermissionsAsync(),
-    'Permission check'
+    'Permission check',
+    PERMISSION_TIMEOUT_MS
   );
   if (current.granted) {
+    cachedPermissionGranted = true;
     return true;
   }
   onStep('Requesting notification permission…');
   const requested = await withTimeout(
     Notifications.requestPermissionsAsync(),
-    'Permission request'
+    'Permission request',
+    PERMISSION_TIMEOUT_MS
   );
+  cachedPermissionGranted = requested.granted;
   return requested.granted;
 }
 
@@ -58,18 +79,25 @@ async function ensureChannel(): Promise<void> {
   if (Platform.OS !== 'android') {
     return;
   }
-  // MIUI and other skins silently drop notifications posted without a
-  // properly configured channel, so create ours explicitly instead of
-  // relying on the library fallback channel.
-  await withTimeout(
-    Notifications.setNotificationChannelAsync(CHANNEL_ID, {
-      name: 'Sadab Dhrubo notifications',
-      importance: Notifications.AndroidImportance.HIGH,
-      vibrationPattern: [0, 250, 250, 250],
-      lightColor: '#6200ee',
-    }),
-    'Channel setup'
-  );
+  if (!channelReady) {
+    // MIUI and other skins silently drop notifications posted without a
+    // properly configured channel, so create ours explicitly instead of
+    // relying on the library fallback channel.
+    channelReady = withTimeout(
+      Notifications.setNotificationChannelAsync(CHANNEL_ID, {
+        name: 'Sadab Dhrubo notifications',
+        importance: Notifications.AndroidImportance.HIGH,
+        vibrationPattern: [0, 250, 250, 250],
+        lightColor: '#6200ee',
+      }).then(() => undefined),
+      'Channel setup',
+      PERMISSION_TIMEOUT_MS
+    ).catch((e) => {
+      channelReady = null;
+      throw e;
+    });
+  }
+  await channelReady;
 }
 
 export default function NotificationsScreen() {
@@ -110,17 +138,28 @@ export default function NotificationsScreen() {
       }
       await withTimeout(
         Notifications.scheduleNotificationAsync({
-          content: { title, body },
+          content: {
+            title,
+            body,
+            // MAX priority + sound so MIUI is less likely to silently
+            // defer it to a later batch.
+            priority: Notifications.AndroidNotificationPriority.MAX,
+            sound: true,
+          },
           // Channel-aware trigger fires immediately on OUR channel instead
           // of the unreliable fallback channel.
           trigger: { channelId: CHANNEL_ID },
         }),
-        'Scheduling'
+        'Scheduling',
+        SCHEDULE_TIMEOUT_MS
       );
       if (alive()) {
-        setStatus('Notification sent. Shade namiye dekho.');
+        const at = new Date().toLocaleTimeString();
+        setStatus(`Notification sent at ${at}. Shade namiye dekho.`);
       }
     } catch (e) {
+      // A failed attempt may mean a stale cached grant — re-check next time.
+      cachedPermissionGranted = null;
       if (alive()) {
         setStatus(
           e instanceof Error ? e.message : 'Failed to send notification.'
@@ -156,6 +195,11 @@ export default function NotificationsScreen() {
       <Text style={styles.title}>Notifications</Text>
       <Text style={styles.subtitle}>
         Button press korle sathe sathe notification ashbe.
+      </Text>
+      <Text style={styles.hint}>
+        Derite asle phone er Settings {'>'} Apps {'>'} Sadab Dhrubo {'>'}{' '}
+        Battery saver e “No restrictions” dao ar Autostart on rakho — MIUI
+        battery optimization notification atke rakhte pare.
       </Text>
 
       <View style={styles.card}>
@@ -223,8 +267,15 @@ const styles = StyleSheet.create({
   subtitle: {
     fontSize: 14,
     color: '#888',
+    marginBottom: 8,
+    textAlign: 'center',
+  },
+  hint: {
+    fontSize: 12,
+    color: '#a78bfa',
     marginBottom: 16,
     textAlign: 'center',
+    paddingHorizontal: 12,
   },
   card: {
     width: '100%',

@@ -1,6 +1,7 @@
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { router } from 'expo-router';
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 const MENU = [
   {
@@ -54,10 +55,16 @@ const MENU = [
   ];
 
 export default function HomeScreen() {
+  const insets = useSafeAreaInsets();
+
   return (
     <View style={styles.container}>
       <ScrollView
-        contentContainerStyle={styles.content}
+        contentContainerStyle={[
+          styles.content,
+          // Last card must clear the system navigation buttons.
+          { paddingBottom: 20 + Math.max(insets.bottom, 0) },
+        ]}
         showsVerticalScrollIndicator={false}
       >
       <View style={styles.hero}>

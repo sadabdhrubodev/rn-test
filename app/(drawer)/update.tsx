@@ -5,8 +5,8 @@ import {
   checkForUpdate,
   downloadAndInstallApk,
   type RemoteVersion,
-} from '../lib/appUpdate';
-import RoundedButton from '../components/RoundedButton';
+} from '../../lib/appUpdate';
+import RoundedButton from '../../components/RoundedButton';
 
 type Phase =
   | { kind: 'idle' }
