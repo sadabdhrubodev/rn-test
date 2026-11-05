@@ -54,7 +54,8 @@ jobs:
         run: bun install --frozen-lockfile
 
       - name: Prebuild Android native project
-        run: npx expo prebuild --platform android --clean
+        working-directory: apps/mobile
+        run: bunx expo prebuild --platform android --clean
 
       - name: Cache Gradle
         uses: actions/cache@v4
@@ -62,18 +63,20 @@ jobs:
           path: |
             ~/.gradle/caches
             ~/.gradle/wrapper
-          key: ${{ runner.os }}-gradle-${{ hashFiles('android/gradle/wrapper/gradle-wrapper.properties', 'android/app/build.gradle', 'android/gradle.properties') }}
+          key: ${{ runner.os }}-gradle-${{ hashFiles('apps/mobile/android/gradle/wrapper/gradle-wrapper.properties', 'apps/mobile/android/app/build.gradle', 'apps/mobile/android/gradle.properties') }}
           restore-keys: |
             ${{ runner.os }}-gradle-
 
       - name: Make gradlew executable
+        working-directory: apps/mobile
         run: chmod +x android/gradlew
 
       - name: Build Release APK
-        working-directory: android
+        working-directory: apps/mobile/android
         run: ./gradlew assembleRelease --no-daemon
 
       - name: Generate version.json for in-app updater
+        working-directory: apps/mobile
         run: |
           node -e "
           const fs = require('fs');
@@ -91,15 +94,15 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: app-release
-          path: android/app/build/outputs/apk/release/app-release.apk
+          path: apps/mobile/android/app/build/outputs/apk/release/app-release.apk
 
       - name: Publish APK to GitHub Release (tag)
         if: startsWith(github.ref, 'refs/tags/')
         uses: softprops/action-gh-release@v2
         with:
           files: |
-            android/app/build/outputs/apk/release/app-release.apk
-            version.json
+            apps/mobile/android/app/build/outputs/apk/release/app-release.apk
+            apps/mobile/version.json
 
       - name: Publish APK to rolling latest release (main)
         if: github.ref == 'refs/heads/main'
@@ -107,5 +110,5 @@ jobs:
         with:
           tag_name: latest
           files: |
-            android/app/build/outputs/apk/release/app-release.apk
-            version.json
+            apps/mobile/android/app/build/outputs/apk/release/app-release.apk
+            apps/mobile/version.json
