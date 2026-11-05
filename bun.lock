@@ -3,7 +3,7 @@
   "configVersion": 0,
   "workspaces": {
     "": {
-      "name": "helloworldapp",
+      "name": "sadab-dhrubo",
       "devDependencies": {
         "turbo": "^2.0.0",
       },
